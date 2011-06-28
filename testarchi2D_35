@@ -1,0 +1,79 @@
+from components import bidimensional
+from math import log
+
+N  = 8
+LN = int(log(N,2))
+
+switches = []
+for i in xrange(N):
+    switches.append([])
+    for j in xrange(N):
+        def simpleSPMD():
+            global i,j,N,LN
+            return self.instanciate('bidimensional.simpleSPMD',
+                    scene=self.scene, x=i+1, y=j+1, position = (i,j),
+                    ninstr = 50000, nthreads = 20,
+                    p = 0.35, nbits = LN, batch_size = 10, loop = False,
+                    boundRequest = None, boundReply = None
+                    )
+
+        def memory():
+            global i,j,N,LN
+            return self.instanciate('base.memory',
+                    scene = self.scene, x = i+1, y = j+1,
+                    latency = 2, boundRequest = None, boundReply = None)
+        if (i,j) == (0,0):
+            switches[i].append(
+                self.instanciate('bidimensional.switch',
+                    scene = self.scene, x=i+1, y=j+1,
+                    position = (i,j),
+                    proc = simpleSPMD,
+                    mem  = memory,
+                    boundRequest = None, boundReply = None
+                    )
+                )
+        elif j == 0:
+            switches[i].append(
+                self.instanciate('bidimensional.switch',
+                    scene = self.scene, x=i+1, y=j+1,
+                    position = (i,j),
+                    proc = simpleSPMD,
+                    mem  = memory,
+                    boundRequest = None, boundReply = None,
+                    upper_chan_left = switches[i-1][j].upper_chan_right,
+                    lower_chan_left = switches[i-1][j].lower_chan_right
+                    )
+                )
+        elif i == 0:
+            switches[i].append(
+                self.instanciate('bidimensional.switch',
+                    scene = self.scene, x=i+1, y=j+1,
+                    position = (i,j),
+                    proc = simpleSPMD,
+                    mem  = memory,
+                    boundRequest = None, boundReply = None,
+                    upper_chan_up = switches[i][j-1].upper_chan_down,
+                    lower_chan_up = switches[i][j-1].lower_chan_down
+                    )
+                )
+        else:
+            switches[i].append(
+                self.instanciate('bidimensional.switch',
+                    scene = self.scene, x=i+1, y=j+1,
+                    position = (i,j),
+                    proc = simpleSPMD,
+                    mem  = memory,
+                    boundRequest = None, boundReply = None,
+                    upper_chan_left = switches[i-1][j].upper_chan_right,
+                    lower_chan_left = switches[i-1][j].lower_chan_right,
+                    upper_chan_up = switches[i][j-1].upper_chan_down,
+                    lower_chan_up = switches[i][j-1].lower_chan_down
+                    )
+                )
+
+for i in xrange(N):
+    switches[0][i].upper_chan_left = switches[N-1][i].upper_chan_right
+    switches[0][i].lower_chan_left = switches[N-1][i].lower_chan_right
+    switches[i][0].upper_chan_up   = switches[i][N-1].upper_chan_down
+    switches[i][0].lower_chan_up   = switches[i][N-1].lower_chan_down
+#vim: set ft=python

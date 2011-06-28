@@ -1,0 +1,36 @@
+from baseline import qBaseline
+from math import log
+from graphical import *
+
+N  = 2048
+LN = int(log(N,2))
+
+processors = []
+memories = []
+
+# creates a channel if necessary
+def chan(p):
+    if p == None:
+        return qBiChannel(scene)
+    else:
+        return p.channel
+
+# instanciate half as processors as memories
+for i in xrange(N/2):
+    processors.append(self.instanciate('qSimpleSPMD',
+        self.scene, 0, i, 50, 100, 0.75 ,20, 10, 
+        boundRequest = 3, boundReply = 3)
+        )
+    processors.append(None)
+
+# creates the baseline network
+# this function is defined in another file
+outputs = qBaseline(self,map(chan, processors), 1, 0, bound = 3)
+
+# instanciates the memories and connects them 
+# to the existing channels
+for i in xrange(N):
+    memories.append(self.instanciate('qMemory', 
+        self.scene, LN + 1, float(i)/2. , 2, outputs[i], 
+        boundRequest = 3, boundReply = 3)
+        )

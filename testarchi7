@@ -1,0 +1,26 @@
+from baseline import qBaseline
+from math import log
+
+N  = 16
+LN = int(log(N,2))
+
+processors = []
+memories = []
+
+def chan(p):
+    if p == None:
+        return base.biChannel(scene)
+    else:
+        return p.channel
+
+for i in xrange(N/2):
+    processors.append(self.instanciate('base.simpleSPMD',
+        self.scene, 0, i, 50, 100, 0.45 ,20, 10, loop = False, 
+        boundRequest = 3, boundReply = 3)
+        )
+    processors.append(None)
+
+outputs = qBaseline(self,map(chan, processors), 1, 0, bound = 3)
+
+for c in outputs:
+    c.reply = c.request

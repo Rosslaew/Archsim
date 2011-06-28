@@ -1,0 +1,27 @@
+ncomponents['processor']    = 4
+ncomponents['memory']       = 4
+ncomponents['simpleSwitch'] = 4
+
+for i in xrange(ncomponents['processor']):
+    components['processor'    + str(i)] = processor(0.7,6)
+
+for i in xrange(ncomponents['memory']):
+    components['memory'       + str(i)] = memory(2)
+
+for i in xrange(ncomponents['simpleSwitch']):
+    components['simpleSwitch' + str(i)] = simpleSwitch()
+
+components['simpleSwitch0'].in0 = components['processor0'].channel
+components['simpleSwitch0'].in1 = components['processor1'].channel
+components['simpleSwitch1'].in0 = components['processor2'].channel
+components['simpleSwitch1'].in1 = components['processor3'].channel
+
+components['simpleSwitch2'].in0 = components['simpleSwitch0'].out0
+components['simpleSwitch2'].in1 = components['simpleSwitch1'].out0
+components['simpleSwitch3'].in0 = components['simpleSwitch0'].out1
+components['simpleSwitch3'].in1 = components['simpleSwitch1'].out1
+
+components['memory0'].channel   = components['simpleSwitch2'].out0
+components['memory1'].channel   = components['simpleSwitch2'].out1
+components['memory2'].channel   = components['simpleSwitch3'].out0
+components['memory3'].channel   = components['simpleSwitch3'].out1

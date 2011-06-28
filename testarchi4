@@ -1,0 +1,23 @@
+from baseline import qBaseline
+from math import log
+from graphical import *
+
+N  = 32
+LN = int(log(N,2))
+
+processors = []
+memories = []
+
+def chan(p):
+    if p == None:
+        return qBiChannel(scene)
+    else:
+        return p.channel
+
+for i in xrange(N):
+    processors.append(self.instanciate('qProcessor',self.scene, 0, i, 0.5,10, boundRequest = 3, boundReply = 3))
+
+outputs = qBaseline(self,map(chan, processors), 1, 0, bound = 3)
+
+for i in xrange(N):
+    memories.append(self.instanciate('qMemory', self.scene, LN + 1, float(i)/2. , 2, outputs[i], boundRequest = 3, boundReply = 3))
