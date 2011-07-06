@@ -1,0 +1,39 @@
+from baseline import qBaseline
+from math import log
+from components import base
+
+N  = 8
+LN = int(log(N,2))
+
+processors = []
+memories = []
+
+# instanciates a channel if necessary
+def chan(p):
+    if p == None:
+        return biChannel(self.scene)
+    else:
+        return p.channel
+
+# instanciates the processors with the wanted parameters
+for i in xrange(N/2):
+    processors.append(
+            self.instanciate('base.progSPMD',scene = self.scene,
+                x = 0, p=0.25, y = i, prog = 'toto', ninstr = 42, nthreads = 4,
+                nbits = 10, batch_size = 10,
+                boundRequest = 3, boundReply = 3)
+            ) 
+    processors.append(None)
+
+# creates the baseline network using a function
+# defined in another file
+outputs = qBaseline(self,map(chan, processors), 1, 0, bound = 3)
+
+# instanciates the memories with the wanted parameters
+for i in xrange(N):
+    memories.append(
+            self.instanciate('base.memory', scene = self.scene,
+                x = LN + 1, y = float(i)/2. ,
+                latency = 2, channel = outputs[i],
+                boundRequest = 3, boundReply = 3)
+            ) 
