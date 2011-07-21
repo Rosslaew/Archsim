@@ -1,9 +1,10 @@
-from   random    import randint as rand, Random
-from   copy      import deepcopy as copy
-from   util      import bin,randbool,randbits
-from   threads   import thread
-from   graphical import circle, half_circle, rectangle
-from   sys       import maxint
+from   random     import randint as rand, Random
+from   copy       import deepcopy as copy
+from   util       import bin,randbool,randbits, iterfile
+from   threads    import thread
+from   graphical  import circle, half_circle, rectangle
+from   sys        import maxint
+from   itertools  import ifilter
 import channels
 import message
 import simulator
@@ -523,6 +524,8 @@ class processor(component):
             except:
                 pass
 
+#--------------------------------------------------------------------------------
+
 class simpleSPMD(processor):
     seed = rand(0,maxint)
 
@@ -533,7 +536,7 @@ class simpleSPMD(processor):
         return self.channel.reply.usage()
 
     def __init__(self,scene, x, y, ninstr, nthreads,\
-            batch_size = float("infinity"), loop = True, *args, **keys):
+            batch_size = float("infinity"), loop = False, *args, **keys):
         processor.__init__(self,scene, x, y, *args,**keys)
 
         self.rand = Random(self.seed)
@@ -553,21 +556,24 @@ class simpleSPMD(processor):
 
     def produce(self):
         self.num_instr += 1
-        return self.threads[0].prog.next()
+        try:
+            return self.threads[0].prog.next()
+        except StopIteration:
+            del self.threads[0]
+            if len(self.threads) is 0:
+                raise simulator.Finished()
+            else:
+                return None
 
     def clock1(self):
-        try:
-            m = self.channel.reply.read()
-            if m is None:
-                return
-            s = "Message from word %d arrived :%d" \
-                    % (int(''.join(m.dst), 2), simulator.cycle - m.cycle)
-            print s
-            self.channel.reply.pop()
-            self.arrived.append(''.join(m.dst))
-        except Exception as inst:
-            print type(inst), inst, m.function
-            raise inst
+        m = self.channel.reply.read()
+        if m is None:
+            return
+        s = "Message from word %d arrived :%d" \
+                % (int(''.join(m.dst), 2), simulator.cycle - m.cycle)
+        print s
+        self.channel.reply.pop()
+        self.arrived.append(''.join(m.dst))
 
     def clock2(self):
         thread = self.threads[0]
@@ -607,6 +613,24 @@ class simpleSPMD(processor):
 
         if len(self.threads) ==0:
             raise simulator.Finished()
+
+#--------------------------------------------------------------------------------
+
+class progSPMD(simpleSPMD):
+    def __init__(self,scene, x, y, prog, *args, **keys):
+        simpleSPMD.__init__(self,scene, x, y, *args,**keys)
+
+        self.prog = prog
+
+        self.progfile = open(prog)
+        self.threads = [
+            thread(
+                iterfile(prog),
+                None,
+                False)
+            for i in xrange(keys['nthreads'])
+            ]
+        print self.threads[0] != self.threads[1]
 
 #--------------------------------------------------------------------------------
 

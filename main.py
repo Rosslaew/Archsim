@@ -1,12 +1,13 @@
 #!/usr/bin/env python2
 import sys
+import simulator
 
 from PyQt4 import QtCore,QtGui, QtOpenGL
 
-from components import base
 from channels   import biChannel
 from qSimulator import Ui_MainWindow
 from simulator  import runner, instanciator
+from PyQt4.Qt   import QApplication
 
 class qInstanciator(instanciator):
     def __init__(self, scene):
@@ -24,7 +25,6 @@ class qInstanciator(instanciator):
 # Create a class for our main window
 class qRunner(runner, QtGui.QMainWindow):
     def __init__(self, file = None):
-        runner.__init__(self, [])
         QtGui.QMainWindow.__init__(self)
 
         # This is always the same
@@ -36,13 +36,12 @@ class qRunner(runner, QtGui.QMainWindow):
         self.scene = QtGui.QGraphicsScene()
         self.ui.view.setScene(self.scene)
 
-
-
         # This makes the view OpenGL-accelerated. Usually makes
         # things much faster, but it *is* optional.
 
         self.ui.view.setViewport(QtOpenGL.QGLWidget())
         self.populate(file)
+        runner.__init__(self, self.components)
 
         self.scene.setSceneRect(self.scene.itemsBoundingRect())
         self.setWindowState(QtCore.Qt.WindowMaximized)
@@ -58,6 +57,9 @@ class qRunner(runner, QtGui.QMainWindow):
 
     def clock(self):
         runner.clock(self)
+        if len(self.unfinished_procs) == 0:
+            print "Finished in %d cycles." % simulator.cycle
+            QApplication.quit()
         for c in self.components:
             c.update_color()
 

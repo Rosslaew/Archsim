@@ -19,7 +19,7 @@ def chan(p):
 for i in xrange(N/2):
     processors.append(
             self.instanciate('base.progSPMD',scene = self.scene,
-                x = 0, p=0.25, y = i, prog = 'toto', ninstr = 42, nthreads = 4,
+                x = 0, p=0.25, y = i, prog = 'toto', ninstr = 42, nthreads = 10,
                 nbits = 10, batch_size = 10,
                 boundRequest = 3, boundReply = 3)
             ) 

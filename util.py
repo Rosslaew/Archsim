@@ -1,4 +1,5 @@
-from random import getrandbits, random
+from random     import getrandbits, random
+from itertools  import ifilter
 
 def bin(n,size = None):
     """
@@ -13,9 +14,9 @@ def bin(n,size = None):
 '000101'
 """
     if size == None:
-	form_size = ""
+        form_size = ""
     else:
-	form_size = str(size)
+        form_size = str(size)
     return str.format("{0:0>" + form_size + "b}",n)
 
 def randbits(k):
@@ -32,6 +33,14 @@ def randbool(p, rand = None):
 def test():
     import doctest
     doctest.testmod()
+
+def iterfile(prog):
+    it = (l.strip() for l in ifilter(lambda x: x != "\n", open(prog)))
+    for l in it:
+        if l == "None":
+            yield None
+        else:
+            yield l
 
 if __name__ == "__main__":
     test()

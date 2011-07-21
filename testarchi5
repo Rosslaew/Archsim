@@ -2,7 +2,7 @@ from baseline import qBaseline
 from math import log
 from components import base
 
-N  = 512
+N  = 8
 LN = int(log(N,2))
 
 processors = []
@@ -19,7 +19,7 @@ def chan(p):
 for i in xrange(N/2):
     processors.append(
             self.instanciate('base.simpleSPMD',scene = self.scene,
-                x = 0, y = i, ninstr = 50000, nthreads = 100,
+                x = 0, y = i, ninstr = 5, nthreads = 10,
                 p = 0.55 ,nbits = 10, batch_size = 10, loop = False, 
                 boundRequest = 3, boundReply = 3)
             )
