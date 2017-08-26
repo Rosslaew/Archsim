@@ -1,6 +1,3 @@
-Usage and development notice
-
-
 # USAGE
 
 The simulator runs a file containing a  description of an architecture,
